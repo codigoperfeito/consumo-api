@@ -8,27 +8,31 @@ document.getElementById("apiButton").addEventListener("click", function() {
             xhr.onreadystatechange = () =>{
                 if(xhr.readyState === 4){
                     if(xhr.status >= 200 && xhr.status < 300){
-                        return resolve(JSON.parse(xhr.responseText));
+                        resolve(JSON.parse(xhr.responseText));
                     }else{
-                        return reject(xhr.status);
+                        reject(xhr.status);
                     }
                 }
             }
             xhr.send();
         })
     }
-    request(apiURL)
-    .then(data=>{
-        data.forEach(e => {
-            constainer.innerHTML += `
-            <ul>
-            <li> ${e.id}</li>
-            <li> ${e.name}</li>
-            <li> ${e.email}</li>
-            <li> ${e.age}</li>
-            </ul>
-            `;
-        });
-    }).catch(e=>console.log("erro e:"+e));
-   
+    async function resolvido (){
+        const resposta = await request(apiURL)
+        try {
+            resposta.forEach(e => {
+                constainer.innerHTML += `
+                <ul>
+                <li> ${e.id}</li>
+                <li> ${e.name}</li>
+                <li> ${e.email}</li>
+                <li> ${e.age}</li>
+                </ul>
+                `;
+            });
+        } catch (e) {
+            constainer.innerText = "Erro ${e} as vezes api do github fica indisponivel, e normal tente novamente apos 5s."
+        }
+    }
+    resolvido();
 });
