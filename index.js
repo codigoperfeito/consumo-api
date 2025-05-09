@@ -1,24 +1,34 @@
 document.getElementById("apiButton").addEventListener("click", function() {
     const apiURL = "https://raw.githubusercontent.com/codigoperfeito/consumo-api/refs/heads/main/data.json";
-    const xhr = new XMLHttpRequest();
     const constainer = document.getElementById("container");
-    xhr.open("GET", apiURL, true);
-    xhr.onreadystatechange = ()=>{
-        if (xhr.status >= 200 && xhr.status < 300 && xhr.readyState === 4) {
-            const data = JSON.parse(xhr.responseText);
-            data.forEach(e => {
-                constainer.innerHTML += `
-                <ul>
-                <li> ${e.id}</li>
-                <li> ${e.name}</li>
-                <li> ${e.email}</li>
-                <li> ${e.age}</li>
-                </ul>
-                `;
-            });;
-        }else if (xhr.status >= 400) {
-            constainer.innerHTML = "Error: " + xhr.status;
-        }
+    function request(url){
+        return new Promise ((resolve, reject) =>{
+            const xhr = new XMLHttpRequest();
+            xhr.open("GET",url,true);
+            xhr.onreadystatechange = () =>{
+                if(xhr.readyState === 4){
+                    if(xhr.status >= 200 && xhr.status < 300){
+                        return resolve(JSON.parse(xhr.responseText));
+                    }else{
+                        return reject(xhr.status);
+                    }
+                }
+            }
+            xhr.send();
+        })
     }
-    xhr.send();
+    request(apiURL)
+    .then(data=>{
+        data.forEach(e => {
+            constainer.innerHTML += `
+            <ul>
+            <li> ${e.id}</li>
+            <li> ${e.name}</li>
+            <li> ${e.email}</li>
+            <li> ${e.age}</li>
+            </ul>
+            `;
+        });
+    }).catch(e=>console.log("erro e:"+e));
+   
 });
